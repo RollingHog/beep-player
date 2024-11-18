@@ -1,0 +1,22 @@
+{
+  "name": "RollingHog beep-player",
+  "short_name": "RH Beep Player",
+  "id": "/beep-player/",
+  "description": "Beep-tone player",
+ 
+  "scope":     "/beep-player/",
+  "start_url": "/beep-player/",
+ 
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+ 
+  "display": "fullscreen", 
+ 
+  "icons": [
+      {
+        "src": "/beep-player/img/icon.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+  ]
+}

@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="./img/icon.png">
+  <link rel="canonical" href="https://rollinghog.github.io/beep-player/" />
+  <link rel="manifest" href="/beep-player/manifest.webmanifest">
+  <title>Бибик-проигрыватель</title>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div>
+    <button id="play_btn">PLAY</button>
+  </div>
+  <textarea name="" id="main_textarea" rows="50">
+  [
+    [428,659,494],
+    [214,494,415],
+    [214,523,440],
+    [214,587,494],
+    [107,659,494],
+    [107,587,494],
+    [214,523,440],
+    [214,494,415],
+    [428,330,440],
+    [214,330,440],
+    [214,523,440],
+    [428,659,523],
+    [214,587,494],
+    [214,523,440],
+    [214,494,415],
+    [214,494,440],
+    [214,494,415],
+    [214,523,440],
+    [428,587,494],
+    [428,659,523],
+    [428,523,440],
+    [428,330,440],
+    [857,330,440],
+    [214,0,0],
+    [428,587,349],
+    [214,698,440],
+    [214,880,523],
+    [107,880,523],
+    [107,880,523],
+    [214,784,494],
+    [214,698,440],
+    [642,659,392],
+    [214,523,330],
+    [214,659,392],
+    [107,659,440],
+    [107,659,392],
+    [214,587,349],
+    [214,523,330],
+    [214,494,415],
+    [214,494,330],
+    [214,494,415],
+    [214,523,440],
+    [214,587,494],
+    [214,587,415],
+    [214,659,523],
+    [214,659,415],
+    [214,523,440],
+    [214,523,330],
+    [428,440,330],
+    [428,440,330],
+    [428,0,0],
+    [857,330,262],
+    [857,262,220],
+    [857,294,247],
+    [857,247,208],
+    [857,262,220],
+    [857,220,165],
+    [857,208,165],
+    [428,247,208],
+    [428,0,0],
+    [857,330,262],
+    [857,262,220],
+    [857,294,247],
+    [857,208,165],
+    [428,262,220],
+    [428,330,262],
+    [857,440,330],
+    [857,415,294],
+    [857,0,0]
+]
+</textarea>
+</body>
+<script>
+  if (navigator.serviceWorker) {
+    const path = '/beep-player'
+    navigator.serviceWorker.register (
+      path + '/sw.js',
+      {scope: path + '/'}
+    ).catch( () => console.log('sevice worker failed'))
+  }
+</script>
+<script src="sw.js"></script>
+<script>
+  // https://stackoverflow.com/questions/879152/how-do-i-make-javascript-beep
+  var audioCtx = new (window.AudioContext || window.webkitAudioContext || window.audioContext);
+
+  function beep(duration, frequency, null2, volume, type, callback) {
+    return new Promise((resolve) => {
+      var oscillator = audioCtx.createOscillator();
+      var gainNode = audioCtx.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioCtx.destination);
+
+      if (volume) { gainNode.gain.value = volume; }
+      if (frequency) { oscillator.frequency.value = frequency; }
+      if (type) { oscillator.type = type; }
+      oscillator.onended = function () {
+        if (callback) callback;
+        resolve()
+      }
+
+      oscillator.start(audioCtx.currentTime);
+      oscillator.stop(audioCtx.currentTime + ((duration || 500) / 1000));
+    })
+  };
+
+  async function onPlay() {
+
+    let korobejniki = JSON.parse(document.getElementById('main_textarea').value)
+
+    while (true) {
+      for (let note of korobejniki) {
+        await beep(...note)
+      }
+    }
+  }
+
+  document.getElementById('play_btn').addEventListener('click', onPlay)
+</script>
+
+</html>
